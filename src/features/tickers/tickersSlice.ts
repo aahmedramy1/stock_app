@@ -43,7 +43,7 @@ export const fetchTickers = createAsyncThunk<
     'tickers/fetchTickers',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await api.get('/reference/tickers');
+            const response = await api.get('/reference/tickers?market=stocks&exchange=XNAS');
             if (response.status !== 200) {
                 if (response.status === 429) {
                     new Error('Too many requests. Please try again later.');
