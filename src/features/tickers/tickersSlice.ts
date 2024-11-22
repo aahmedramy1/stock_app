@@ -5,6 +5,7 @@ interface TickersState {
     tickers: any[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
+    searchText: string;
 }
 
 
@@ -39,8 +40,13 @@ const tickersSlice = createSlice({
         tickers: [],
         status: 'idle',
         error: null,
+        searchText: '',
     } as TickersState,
-    reducers: {},
+    reducers: {
+        setSearchText: (state: TickersState, action: PayloadAction<string>) => {
+            state.searchText = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchTickers.pending, (state) => {
@@ -58,4 +64,5 @@ const tickersSlice = createSlice({
     },
 });
 
+export const { setSearchText } = tickersSlice.actions;
 export default tickersSlice.reducer;
