@@ -1,25 +1,13 @@
-import React, {useEffect} from 'react';
-import api from "./api";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
 
 function App() {
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const response = await api.get("/reference/tickers");
-            console.log(response)
-            console.log(response.data)
-        }
-        fetchData().catch(console.error)
-    })
-  return (
-    <div className="App">
-      <header className="App-header">
-        <h1 className="text-3xl font-bold underline">
-          Hello world!
-        </h1>
-      </header>
-    </div>
-  );
+    return (
+        <Routes>
+            <Route path="/" element={<Home />} />
+        </Routes>
+    );
 }
 
 export default App;
