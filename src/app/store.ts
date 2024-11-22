@@ -1,7 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
+import tickersReducer from '../features/tickers/tickersSlice';
 
 export const store = configureStore({
-    reducer: {},
+    reducer: {
+        tickers: tickersReducer,
+    },
 })
 
 export type RootState = ReturnType<typeof store.getState>
