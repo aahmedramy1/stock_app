@@ -45,21 +45,18 @@ export const fetchTickers = createAsyncThunk<
                 ? `${nextUrl}&market=stocks&exchange=XNAS`
                 : '/reference/tickers?market=stocks&exchange=XNAS';
 
-            const response = await api.get(url);
-
-            if (response.status !== 200) {
-                if (response.status === 429) {
-                    throw new Error('Too many requests. Please try again later.');
-                }
-                throw new Error('Failed to fetch tickers.');
-            }
+            const response = await api.get(url)
 
             return response.data
         } catch (error: any) {
+            if(error.status === 429) {
+                return rejectWithValue('Too many requests. Please try again later.');
+            }
             return rejectWithValue(error.message);
         }
     }
 );
+
 
 const tickersSlice = createSlice({
     name: 'tickers',
