@@ -33,29 +33,34 @@ interface TickersState {
 
 export const fetchTickers = createAsyncThunk<
     TickerResponse,
-    string | undefined,
+    { nextUrl?: string; searchQuery?: string },
     {
         rejectValue: string;
     }
 >(
     'tickers/fetchTickers',
-    async (nextUrl: string | undefined, { rejectWithValue }) => {
+    async ({ nextUrl, searchQuery }: { nextUrl?: string; searchQuery?: string }, { rejectWithValue }) => {
         try {
-            const url = nextUrl
+            let url = nextUrl
                 ? `${nextUrl}&market=stocks&exchange=XNAS`
                 : '/reference/tickers?market=stocks&exchange=XNAS';
 
-            const response = await api.get(url)
+            if (searchQuery) {
+                url = `${url}&search=${(searchQuery)}`;
+            }
 
-            return response.data
+            const response = await api.get(url);
+
+            return response.data;
         } catch (error: any) {
-            if(error.status === 429) {
+            if (error.status === 429) {
                 return rejectWithValue('Too many requests. Please try again later.');
             }
             return rejectWithValue(error.message);
         }
     }
 );
+
 
 
 const tickersSlice = createSlice({
@@ -69,6 +74,11 @@ const tickersSlice = createSlice({
     reducers: {
         setSearchText: (state: TickersState, action: PayloadAction<string>) => {
             state.searchText = action.payload;
+        },
+        resetStore: (state: TickersState) => {
+            state.tickers = { results: [], next_url: undefined, count: 0, request_id: '', status: '' };
+            state.status = 'idle';
+            state.error = null;
         }
     },
     extraReducers: (builder) => {
@@ -90,5 +100,5 @@ const tickersSlice = createSlice({
     },
 });
 
-export const { setSearchText } = tickersSlice.actions;
+export const { setSearchText, resetStore} = tickersSlice.actions;
 export default tickersSlice.reducer;

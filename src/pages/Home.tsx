@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 const Home = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { tickers, status, error } = useSelector((state: RootState) => state.tickers);
+    const searchText = useSelector((state: RootState) => state.tickers.searchText);
     const [isFetching, setIsFetching] = useState(false);
 
     useEffect(() => {
@@ -20,16 +21,16 @@ const Home = () => {
 
     useEffect(() => {
         if (status === "idle") {
-            dispatch(fetchTickers());
+            dispatch(fetchTickers({nextUrl: undefined, searchQuery: searchText}));
         }
-    }, [dispatch, status]);
+    }, [dispatch, searchText, status]);
 
     const fetchMoreTickers = useCallback(() => {
         if (tickers.next_url) {
             setIsFetching(true);
-            dispatch(fetchTickers(tickers.next_url)).finally(() => setIsFetching(false));
+            dispatch(fetchTickers({nextUrl: tickers.next_url, searchQuery: searchText})).finally(() => setIsFetching(false));
         }
-    }, [dispatch, tickers.next_url]);
+    }, [dispatch, searchText, tickers.next_url]);
 
     useInfiniteScroll(fetchMoreTickers, !isFetching && status === "succeeded" && !!tickers.next_url);
 
