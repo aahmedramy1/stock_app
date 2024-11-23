@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import api from "../../api";
 
-
 interface Ticker {
     active: boolean;
     cik: string;
@@ -19,7 +18,7 @@ interface Ticker {
 
 interface TickerResponse {
     count: number;
-    next_url: string;
+    next_url: string | undefined;
     request_id: string;
     results: Ticker[];
     status: string;
@@ -32,26 +31,30 @@ interface TickersState {
     searchText: string;
 }
 
-
 export const fetchTickers = createAsyncThunk<
     TickerResponse,
-    undefined,
+    string | undefined,
     {
         rejectValue: string;
     }
 >(
     'tickers/fetchTickers',
-    async (_, { rejectWithValue }) => {
+    async (nextUrl: string | undefined, { rejectWithValue }) => {
         try {
-            const response = await api.get('/reference/tickers?market=stocks&exchange=XNAS');
+            const url = nextUrl
+                ? `${nextUrl}&market=stocks&exchange=XNAS`
+                : '/reference/tickers?market=stocks&exchange=XNAS';
+
+            const response = await api.get(url);
+
             if (response.status !== 200) {
                 if (response.status === 429) {
-                    new Error('Too many requests. Please try again later.');
+                    throw new Error('Too many requests. Please try again later.');
                 }
-                new Error('Failed to fetch tickers.');
+                throw new Error('Failed to fetch tickers.');
             }
 
-            return await response.data
+            return response.data
         } catch (error: any) {
             return rejectWithValue(error.message);
         }
@@ -61,7 +64,7 @@ export const fetchTickers = createAsyncThunk<
 const tickersSlice = createSlice({
     name: 'tickers',
     initialState: {
-        tickers: {},
+        tickers: { results: [], next_url: undefined, count: 0, request_id: '', status: '' },
         status: 'idle',
         error: null,
         searchText: '',
@@ -79,7 +82,9 @@ const tickersSlice = createSlice({
             })
             .addCase(fetchTickers.fulfilled, (state, action: PayloadAction<TickerResponse>) => {
                 state.status = 'succeeded';
-                state.tickers = action.payload;
+
+                state.tickers.results.push(...action.payload.results);
+                state.tickers.next_url = action.payload.next_url; // Update the next_url for pagination
             })
             .addCase(fetchTickers.rejected, (state, action: PayloadAction<string | undefined>) => {
                 state.status = 'failed';
