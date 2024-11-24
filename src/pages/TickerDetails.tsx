@@ -82,6 +82,7 @@ const TickerDetails = () => {
         ],
         tooltip: {
             xDateFormat: "%Y-%m-%d",
+            // eslint-disable-next-line no-template-curly-in-string
             pointFormat: "Price: <b>${point.y}</b>",
         },
     };
