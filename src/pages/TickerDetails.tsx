@@ -117,7 +117,7 @@ const TickerDetails = () => {
                 </div>
                 <div>
                     <span className="font-bold">Address: </span>
-                    {tickerDetails.address.address1} - {tickerDetails.address.city} - {tickerDetails.address.state}
+                    {tickerDetails.address?.address1} - {tickerDetails.address?.city} - {tickerDetails.address?.state}
                 </div>
                 <div>
                     <span className="font-bold">Market cap: </span>
