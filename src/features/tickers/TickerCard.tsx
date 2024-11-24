@@ -2,6 +2,7 @@ import { useState } from 'react';
 // @ts-ignore
 import ReactModal from 'react-modal';
 import Confetti from 'react-confetti';
+import {useNavigate} from "react-router-dom";
 
 ReactModal.setAppElement('#root');
 
@@ -9,8 +10,10 @@ const TickerCard = ({ name, ticker }: { name: string; ticker: string }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
 
+    const navigate = useNavigate();
+
     const handleCardClick = () => {
-        setIsDialogOpen(true);
+        navigate(`/${ticker}`);
     };
 
     const handleCloseDialog = () => {
