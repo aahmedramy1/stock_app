@@ -88,8 +88,8 @@ const TickerDetails = () => {
     };
 
     return (
-        <div className="p-6 flex justify-between relative">
-            <div className="relative w-[60%]">
+        <div className="p-6 flex flex-col md:flex-row md:justify-between relative gap-6 md:gap-none">
+            <div className="relative w-full md:w-[60%]">
                 <HighchartsReact highcharts={Highcharts} options={options} />
 
                 {showOverlay && (
